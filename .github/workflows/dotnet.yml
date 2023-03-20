@@ -25,10 +25,14 @@ jobs:
       run: |
         dotnet build --no-restore src/Veldrid/Veldrid.csproj -c Release;
         dotnet pack src/Veldrid/Veldrid.csproj -c Release;
-    - name: Pack Bindings
+    - name: Pack OpenGL Bindings
       run: |
-        dotnet build --no-restore src/**/Veldrid.*Bindings.csproj -c Release;
-        dotnet pack src/**/Veldrid.*Bindings.csproj -c Release;
+        dotnet build --no-restore src/Veldrid.OpenGLBindings/Veldrid.OpenGLBindings.csproj -c Release;
+        dotnet pack src/Veldrid.OpenGLBindings/Veldrid.OpenGLBindings.csproj -c Release;
+    - name: Pack Metal Bindings
+      run: |
+        dotnet build --no-restore src/Veldrid.MetalBindings/Veldrid.MetalBindings.csproj -c Release;
+        dotnet pack src/Veldrid.MetalBindings/Veldrid.MetalBindings.csproj -c Release;
     - name: Publish tagged release to nuget.org
       if: startsWith(github.ref, 'refs/tags/')
       run: dotnet nuget push bin\Packages\Release\ppy.*.nupkg -s https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_API_KEY}}
