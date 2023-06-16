@@ -58,13 +58,11 @@ namespace Veldrid.MTL
         {
         }
 
+        private (int x, int y, int w, int h)? pendingActiveDisplay;
+
         public override void UpdateActiveDisplay(int x, int y, int w, int h)
         {
-            if (_displayLink != null)
-            {
-                _frameEndedEvent.Set();
-                _displayLink.UpdateActiveDisplay(x, y, w, h);
-            }
+            pendingActiveDisplay = (x, y, w, h);
         }
 
         public override double GetActualRefreshPeriod()
@@ -255,6 +253,12 @@ namespace Veldrid.MTL
         {
             _nextFrameReadyEvent.Set();
             _frameEndedEvent.WaitOne();
+
+            if (pendingActiveDisplay != null)
+            {
+                _displayLink?.UpdateActiveDisplay(pendingActiveDisplay.Value.x, pendingActiveDisplay.Value.y, pendingActiveDisplay.Value.w, pendingActiveDisplay.Value.h);
+                pendingActiveDisplay = null;
+            }
         }
 
         public override TextureSampleCount GetSampleCountLimit(PixelFormat format, bool depthFormat)
